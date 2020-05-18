@@ -1,0 +1,63 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+test {
+    useJUnitPlatform {
+//        includeTags 'CucmEnvironment'
+
+        if (System.getProperty("tags") != null) {
+            includeTags = System.getProperty("tags").split(",") //gradle test -Dtags=smoke,CucmEnvironment
+        }
+
+        if (System.getProperty("excludetags") != null) {
+            excludeTags = System.getProperty("excludetags").split(",") //gradle test -Dexcludetags=smoke,CucmEnvironment
+        }
+    }
+
+//    failFast = true  //default is false, when true cleaning will be proceed, but other tests will be ignored
+
+    filter {
+//        includeTestsMatching "*Cucm*"
+//        includeTestsMatching "*Genesys*"
+
+/*     cmd
+        gradle test-- tests "*Cucm*"
+        gradle test --tests "*Genesys*"
+ */
+    }
+}
+
+repositories {
+    maven {
+        url "http://artifactory.zoomint.com/artifactory/zoom-ci-release/"
+        mavenContent {
+            releasesOnly()
+        }
+    }
+    maven {
+        url "http://artifactory.zoomint.com/artifactory/zoom-ci-snapshot/"
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
+    maven {
+        url "http://artifactory.zoomint.com/artifactory/zoom-ci-release"
+    }
+    maven {
+        url "http://artifactory.zoomint.com/artifactory/ci-callrec-snapshots"
+    }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.6.2'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
