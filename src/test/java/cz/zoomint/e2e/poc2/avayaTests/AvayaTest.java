@@ -1,6 +1,5 @@
-package cz.zoomint.e2e.poc2.cucmTests;
+package cz.zoomint.e2e.poc2.avayaTests;
 
-import cz.zoomint.e2e.poc2.annotations.CucmEnvironment;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -8,32 +7,30 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@CucmEnvironment
 @Tag("smoke")
-public class CucmEnvironmentIT {
-
+public class AvayaTest {
 	@BeforeAll
 	static void beforeAll() {
-		System.out.println("CUCM BeforeAll IT");
+		System.out.println("AVAYA BeforeAll test");
 	}
 
 	@BeforeEach
 	void setUp() {
-		System.out.println("CUCM BeforeEach IT");
+		System.out.println("AVAYA BeforeEach test");
 	}
 
 	@AfterEach
 	void tearDown() {
-		System.out.println("CUCM AfterEach IT");
+		System.out.println("AVAYA AfterEach test");
 	}
 
 	@AfterAll
 	static void afterAll() {
-		System.out.println("CUCM AfterAll IT");
+		System.out.println("AVAYA AfterAll test");
 	}
 
 	@Test
 	void name() {
-		System.out.println("CUCM IT");
+		System.out.println("AVAYA Test 1");
 	}
 }

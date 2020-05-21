@@ -4,6 +4,9 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.GLOBAL;
 
 public class CucmEnvironmentExtension implements BeforeAllCallback, AfterAllCallback, ExtensionContext.Store.CloseableResource {

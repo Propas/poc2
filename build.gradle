@@ -2,30 +2,97 @@ plugins {
     id 'java'
     id 'maven-publish'
 }
-
-test {
-    useJUnitPlatform {
-//        includeTags 'CucmEnvironment'
-
-        if (System.getProperty("tags") != null) {
-            includeTags = System.getProperty("tags").split(",") //gradle test -Dtags=smoke,CucmEnvironment
-        }
-
-        if (System.getProperty("excludetags") != null) {
-            excludeTags = System.getProperty("excludetags").split(",") //gradle test -Dexcludetags=smoke,CucmEnvironment
+tasks.withType(Test) {
+    testLogging {
+        showStandardStreams = true
+        testLogging.exceptionFormat = "full"
+        testLogging.showStackTraces = true
+        testLogging.showExceptions = true
+        testLogging.showCauses = false
+        events "PASSED", "FAILED", "SKIPPED"
+        reports {
+            junitXml.enabled = true
+            html.enabled = false
         }
     }
+    afterSuite { desc, result ->
+        if (!desc.parent) {
+            def output = "Results: ${result.resultType} (${result.testCount} tests: ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+            def startItem = "|  ", endItem = "  |"
+            def repeatLength = startItem.length() + output.length() + endItem.length()
+            println("\n" + ("-" * repeatLength) + "\n" + startItem + output + endItem + "\n" + ("-" * repeatLength))
+        }
+    }
+}
 
-//    failFast = true  //default is false, when true cleaning will be proceed, but other tests will be ignored
+private static String[] fetchIncludeTags(){
+    if (System.getProperty("tags") != null) {
+        return System.getProperty("tags").split(",") //gradle test -Dtags=smoke
+    }
+    return new String[0]
+}
 
-    filter {
-//        includeTestsMatching "*Cucm*"
-//        includeTestsMatching "*Genesys*"
+private static String[] fetchExcludeTags(){
+    if (System.getProperty("excludetags") != null) {
+        return System.getProperty("excludetags").split(",") //gradle test -Dexcludetags=smoke
+    }
+    return new String[0]
+}
 
-/*     cmd
-        gradle test-- tests "*Cucm*"
-        gradle test --tests "*Genesys*"
- */
+test {
+    dependsOn("testGenesys")
+    dependsOn("testCucm")
+    dependsOn("testLegacy")
+
+}
+
+/*
+gradle clean testCucm -Dtags=smoke
+gradle clean testCucm
+
+gradle clean testGenesys
+gradle clean testGenesys -Dtags=smoke
+gradle clean testGenesys -Dtags=smoke,fire
+
+gradle clean test
+gradle clean test -Dexcludetags=failing
+*/
+
+task testLegacy(type: Test) {
+    useJUnitPlatform {
+        filter {
+            excludeTestsMatching "*Cucm*"
+            excludeTestsMatching "*Genesys*"
+
+        }
+
+        includeTags = fetchIncludeTags()
+        excludeTags = fetchExcludeTags()
+    }
+}
+
+task testGenesys(type: Test) {
+    useJUnitPlatform{
+        filter {
+            includeTestsMatching "*Genesys*"
+//            includeTestsMatching "cz.zoomint.e2e.poc2.genesysTests.*"
+        }
+
+        includeTags = fetchIncludeTags()
+        excludeTags = fetchExcludeTags()
+    }
+}
+
+task testCucm(type: Test) {
+//    dependsOn("testGenesys")
+    useJUnitPlatform {
+        filter {
+            includeTestsMatching "*Cucm*"
+
+        }
+
+        includeTags = fetchIncludeTags()
+        excludeTags = fetchExcludeTags()
     }
 }
 
